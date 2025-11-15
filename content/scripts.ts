@@ -1,4 +1,4 @@
-import { toHalfWidth } from "../scripts/helpers";
+import { checkMode, convert } from "../scripts/helpers";
 
 let unmount: () => void;
 
@@ -54,16 +54,17 @@ function initial() {
       return;
     }
     const t = sel.toString().trim();
-    if (t.length < 1 || 10 < t.length) {
+    if (t.length < 2 || 10 < t.length) {
       hideContentDiv();
       return;
     }
-    const h = toHalfWidth(t);
-    if (h === t) {
+    const mode = checkMode(t);
+    if (mode === null) {
       hideContentDiv();
       return;
     }
-    convertedTextElement.textContent = h + "です";
+    const conv = convert(t, mode);
+    convertedTextElement.textContent = conv;
 
     const range = sel.getRangeAt(0);
     const rect = range.getBoundingClientRect();
