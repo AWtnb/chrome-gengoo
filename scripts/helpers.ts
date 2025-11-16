@@ -50,21 +50,51 @@ export const checkMode = (s: string): YearMode | null => {
 };
 
 const fromAnnoDomini = (s: string): string => {
-  // TODO: 西暦から和暦に変換。各暦の元年は併記する。
+  const y = Number(s.replace(/[^0-9]/g, ""));
+  const r1 = 2019;
+  if (r1 <= y) {
+    const g = "令和";
+    if (y == r1) return g + "元年（～4月30日：平成31年）";
+    return `${g}${y - r1 + 1}年`;
+  }
+  const h1 = 1989;
+  if (h1 <= y) {
+    const g = "平成";
+    if (y == h1) return g + "元年（～1月7日：昭和64年）";
+    return `${g}${y - h1 + 1}年`;
+  }
+  const s1 = 1926;
+  if (s1 <= y) {
+    const g = "昭和";
+    if (y == s1) return g + "元年（～12月25日：大正15年）";
+    return `${g}${y - s1 + 1}年`;
+  }
+  const t1 = 1912;
+  if (t1 <= y) {
+    const g = "大正";
+    if (y == t1) return g + "元年（～7月30日：明治45年）";
+    return `${g}${y - t1 + 1}年`;
+  }
+  const m1 = 1868;
+  if (m1 <= y) {
+    const g = "明治";
+    if (y == m1) return g + "元年（～9月7日：慶応4年）";
+    return `${g}${y - m1 + 1}年`;
+  }
   return s;
 };
 
 const fromGengo = (s: string): string => {
-  const f = s.substring(0, 1);
-  const yy = s.replace(/[^0-9]/g, "");
   const ad = (() => {
-    if (f == "明" || f == "M") return 1867;
-    if (f == "大" || f == "T") return 1911;
-    if (f == "昭" || f == "S") return 1925;
-    if (f == "平" || f == "H") return 1988;
+    const g = s.substring(0, 1);
+    if (g == "明" || g == "M") return 1867;
+    if (g == "大" || g == "T") return 1911;
+    if (g == "昭" || g == "S") return 1925;
+    if (g == "平" || g == "H") return 1988;
     return 2018;
   })();
-  return `${ad + Number(yy)}年`;
+  const y = Number(s.replace(/[^0-9]/g, ""));
+  return `${ad + y}年`;
 };
 
 export const convert = (s: string, mode: YearMode): string => {
