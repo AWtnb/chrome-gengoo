@@ -4,7 +4,7 @@ const toHalfWidth = (str: string): string => {
   });
 };
 
-const JNum: Record<string, string> = {
+const KanjiNum: Record<string, string> = {
   一: "1",
   二: "2",
   三: "3",
@@ -17,20 +17,27 @@ const JNum: Record<string, string> = {
   〇: "0",
 };
 
-const sanitize = (s: string): string => {
-  return (toHalfWidth(s) + "年")
-    .replace(/年{2}/, "年")
-    .replace("元年", "1年")
-    .replace(/十./g, (s) => {
-      const last = s.slice(-1);
-      if ("一二三四五六七八九".indexOf(last) != -1) {
-        return last;
-      }
-      return s;
-    })
-    .replace(/一二三四五六七八九〇/g, (s) => {
-      return JNum[s] || s;
+const toArabic = (s: string): string => {
+  const ten = "十";
+  return s.replace(/[〇一二三四五六七八九十]+/g, (m) => {
+    if (m === ten) {
+      return "10";
+    }
+    if (m.startsWith(ten)) {
+      return toArabic(`1${m.slice(1)}`);
+    }
+    if (m.endsWith(ten)) {
+      return toArabic(`${m.slice(0, -1)}0`);
+    }
+    return m.replace(/十/g, "").replace(/[〇一二三四五六七八九]/g, (c) => {
+      return KanjiNum[c] || c;
     });
+  });
+};
+
+const sanitize = (s: string): string => {
+  const f = (toHalfWidth(s) + "年").replace(/年{2}/, "年").replace(/年.+/, "年").replace("元年", "1年");
+  return toArabic(f);
 };
 
 type YearMode = "annodomini" | "gengo";
@@ -99,6 +106,7 @@ const fromGengo = (s: string): string => {
 
 export const convert = (s: string, mode: YearMode): string => {
   s = sanitize(s);
+  console.log(s);
   if (mode == "annodomini") {
     return fromAnnoDomini(s);
   }

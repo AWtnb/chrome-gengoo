@@ -1,9 +1,0 @@
-.content_script {
-  position: absolute;
-  border: 1px solid slateblue;
-  z-index: 99999;
-  background-color: white;
-  display: none;
-  font-size: 14px;
-  color: #333;
-}
