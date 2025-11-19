@@ -106,7 +106,7 @@ const fromGengo = (s: string): string => {
 
 export const convert = (s: string, mode: YearMode): string => {
   s = sanitize(s);
-  console.log(s);
+  console.log(checkMode(s));
   if (mode == "annodomini") {
     return fromAnnoDomini(s);
   }
