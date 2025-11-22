@@ -29,29 +29,29 @@ export default defineContentScript({
     container.appendChild(textHolder);
     shadowRoot.appendChild(container);
 
-    const hideContentDiv = () => {
+    const hideContainer = () => {
       container.style.display = "none";
     };
 
-    document.addEventListener("selectionchange", () => {
+    const popupContainer = () => {
       const a = document.activeElement;
       if (a instanceof HTMLInputElement || a instanceof HTMLTextAreaElement) {
-        hideContentDiv();
+        hideContainer();
         return;
       }
       const sel = window.getSelection();
       if (!sel || sel.rangeCount < 1) {
-        hideContentDiv();
+        hideContainer();
         return;
       }
       const t = sel.toString().trim();
       if (t.length < 2 || 10 < t.length) {
-        hideContentDiv();
+        hideContainer();
         return;
       }
       const mode = checkMode(t);
       if (mode === null) {
-        hideContentDiv();
+        hideContainer();
         return;
       }
       const conv = convert(t, mode);
@@ -65,6 +65,16 @@ export default defineContentScript({
       container.style.top = `${top}px`;
       container.style.left = `${left}px`;
       container.style.display = "block";
+    };
+
+    let debounceTimer: number | undefined;
+    document.addEventListener("selectionchange", () => {
+      if (debounceTimer !== undefined) {
+        clearTimeout(debounceTimer);
+      }
+      debounceTimer = window.setTimeout(() => {
+        popupContainer();
+      }, 200);
     });
   },
 });
